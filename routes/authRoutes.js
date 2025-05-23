@@ -92,7 +92,7 @@ router.post("/register", async (req, res) => {
         //Inserting user info
         client.query(`INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;`, [username, hashedPassword], (err, results) => {
             if(err) {
-                res.status(500).json({ error: "An error occurred"});
+                res.status(500).json({ error: "An error occurred" });
             }
 
             res.status(200).json("User registered");

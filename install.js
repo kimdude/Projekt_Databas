@@ -25,7 +25,7 @@ client.connect((error) => {
 client.query(`
     DROP TABLE IF EXISTS users CASCADE;
     CREATE TABLE users (
-        username    VARCHAR(10) PRIMARY KEY,
+        username    VARCHAR(20) PRIMARY KEY,
         password    VARCHAR NOT NULL
     )
 `);
@@ -80,7 +80,7 @@ client.query(`
         customer_id SERIAL PRIMARY KEY,
         firstname   VARCHAR(10),
         surname     VARCHAR(15),
-        email       VARCHAR(20) NOT NULL
+        email       VARCHAR(40) NOT NULL
     )
 `);
 

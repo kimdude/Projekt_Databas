@@ -188,7 +188,7 @@ router.post("/reviews", (req, res) => {
                             res.status(500).json({ error: "An error occurred adding customer: " + err });
 
                         } else {
-                            customerID = result.rows[0];
+                            customerID = results.rows[0].customer_id;
                             addCustomer(req, res, customerID);
 
                         }
