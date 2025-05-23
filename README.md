@@ -3,7 +3,7 @@
 
 Repot innehåller källkod för ett express-baserat API, som hanterar användare, meny, bokningar och recensioner. Det använder JSON Web Token (JWT) för auktorisering vid redigering av menyn och utläsningar av bokningar. API:et har stöd för CRUD genom att meny och bokningar kan skapas, läsas ut, uppdateras och raderas. Recensioner kan också läsas ut och raderas. En användare kan även skapa nya användare och lösenord hashas med bcrypt. Alla CRUD metoder använder parameteriserade SQL-frågor för att undvika SQL-injections.
 
-API:et är kopplat till en Postgre relationsdatabas som hostas av Render. Vid anrop returneras JSON-objekt. Grundlänken till API:et är [FIXA LÄNKEN](FIXA LÄNKEN).
+API:et är kopplat till en Postgre relationsdatabas som hostas av Render. Vid anrop returneras JSON-objekt. Grundlänken till API:et är [https://projekt-databas.onrender.com/api](https://projekt-databas.onrender.com/api).
 
 ### API för användare
 Användare krävs för att ge behörighet att komma åt vissa metoder på router. När en användare loggar in skickas ett "token" som används för att komma åt router.

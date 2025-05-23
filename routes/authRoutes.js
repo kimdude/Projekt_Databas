@@ -126,25 +126,51 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
     let user = req.username.username;
     let { message, booked_date, booked_time, people, confirmed } = req.body;
 
-    //Updating booking
-    client.query(`UPDATE bookings
-        SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
-        WHERE booking_num=$6`, [message, booked_date, booked_time, people, confirmed, bookingNr] , (err, result) => {
-        if(err) {
-            res.status(500).json({error: "An error occurred updating booking: " + err});
-        } else {
-            
-            //Inserting into handled_bookings
-            client.query(`INSERT INTO handled_bookings (username, booking_num) VALUES ($1, $2) RETURNING *;`, [user, bookingNr], (err, result) => {
-                if(err) {
-                    res.status(500).json({error: "An error occurred inserting handled booking: " + err});
-                } else {
-                    const updatedBooking = result.rows;
-                    res.status(200).json({ updatedBooking });
-                }
-            });
+    const errorList = {
+        message: [],
+        detail: "",
+        https_resonse: {
         }
-    });
+    };
+    
+    if(!booked_date) {
+        return errorList.message.push("Insert date for booking");
+    }
+
+    if(!booked_time) {
+        return errorList.message.push("Insert time for booking");
+    }
+
+    if(!people) {
+        return errorList.message.push("Insert size of group");
+    }
+
+    if(errorList.length > 0) {
+        errorList.detail = "booked date, booked time and people must be included.";
+        errorList.https_resonse.message = "Bad request";
+        res.status(400).json({ errorList });
+
+    } else {
+        //Updating booking
+        client.query(`UPDATE bookings
+            SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
+            WHERE booking_num=$6`, [message, booked_date, booked_time, people, confirmed, bookingNr] , (err, result) => {
+            if(err) {
+                res.status(500).json({error: "An error occurred updating booking: " + err});
+            } else {
+                
+                //Inserting into handled_bookings
+                client.query(`INSERT INTO handled_bookings (username, booking_num) VALUES ($1, $2) RETURNING *;`, [user, bookingNr], (err, result) => {
+                    if(err) {
+                        res.status(500).json({error: "An error occurred inserting handled booking: " + err});
+                    } else {
+                        const updatedBooking = result.rows;
+                        res.status(200).json({ updatedBooking });
+                    }
+                });
+            }
+        });
+    }
 });
 
 
@@ -167,25 +193,51 @@ router.delete("/bookings/:id", authenticateToken, (req, res) => {
 router.post("/tapasmenu", authenticateToken, (req, res) => {
     const { name, description, price } = req.body;
 
-    //Inserting into tapas
-    client.query(`INSERT INTO tapas (name, description, price) VALUES ($1,$2,$3) RETURNING tapas_code;`, [name, description, price], (err, results) => {
-        if(err) {
-             res.status(500).json({ error: "An error occurred: " + err });
-        } else {
-
-            const tapasCode = results.rows[0].tapas_code;
-            const user = req.username.username;
-
-            //Inserting into edited_tapas
-            client.query(`INSERT INTO edited_tapas (username, tapas_code) VALUES ($1, $2)`, [user, tapasCode], (err, results) => {
-                if(err) {
-                    return res.status(500).json({ error: "An error occurred: " + err });
-                }
-
-                res.status(200).json({ message: "Tapas har lagts till. "});
-            })
+    const errorList = {
+        message: [],
+        detail: "",
+        https_resonse: {
         }
-    })
+    };
+    
+    if(!name) {
+        return errorList.message.push("Insert name of tapas");
+    }
+
+    if(!description) {
+        return errorList.message.push("Insert description of tapas");
+    }
+
+    if(!price) {
+        return errorList.message.push("Insert price");
+    }
+
+    if(errorList.length > 0) {
+        errorList.detail = "Name, description and price must be included.";
+        errorList.https_resonse.message = "Bad request";
+        res.status(400).json({ errorList });
+
+    } else {
+        //Inserting into tapas
+        client.query(`INSERT INTO tapas (name, description, price) VALUES ($1,$2,$3) RETURNING tapas_code;`, [name, description, price], (err, results) => {
+            if(err) {
+                res.status(500).json({ error: "An error occurred: " + err });
+            } else {
+
+                const tapasCode = results.rows[0].tapas_code;
+                const user = req.username.username;
+
+                //Inserting into edited_tapas
+                client.query(`INSERT INTO edited_tapas (username, tapas_code) VALUES ($1, $2)`, [user, tapasCode], (err, results) => {
+                    if(err) {
+                        return res.status(500).json({ error: "An error occurred: " + err });
+                    }
+
+                    res.status(200).json({ message: "Tapas har lagts till. "});
+                })
+            }
+        });
+    }
 });
 
 //Editing tapas menu
@@ -194,25 +246,51 @@ router.put("/tapasmenu/:id", authenticateToken, (req, res) => {
     let user = req.username.username;
     let { name, description, availability, price } = req.body;
 
-    //Updating booking
-    client.query(`UPDATE tapas
-        SET name=$1, description=$2, availability=$3, price=$4 WHERE tapas_code=$5`, 
-        [name, description, availability, price, tapasCode] , (err, result) => {
-        if(err) {
-            res.status(500).json({error: "An error occurred updating tapas: " + err});
-        } else {
-            
-            //Inserting into handled_bookings
-            client.query(`INSERT INTO edited_tapas (username, tapas_code) VALUES ($1, $2) RETURNING *;`, [user, tapasCode], (err, result) => {
-                if(err) {
-                    res.status(500).json({error: "An error occurred inserting edited tapas: " + err});
-                } else {
-                    const updatedTapas = result.rows;
-                    res.status(200).json({ updatedTapas });
-                }
-            });
+    const errorList = {
+        message: [],
+        detail: "",
+        https_resonse: {
         }
-    });
+    };
+    
+    if(!name) {
+        return errorList.message.push("Insert name of tapas");
+    }
+
+    if(!description) {
+        return errorList.message.push("Insert description of tapas");
+    }
+
+    if(!price) {
+        return errorList.message.push("Insert price");
+    }
+
+    if(errorList.length > 0) {
+        errorList.detail = "Name, description and price must be included.";
+        errorList.https_resonse.message = "Bad request";
+        res.status(400).json({ errorList });
+
+    } else {
+        //Updating booking
+        client.query(`UPDATE tapas
+            SET name=$1, description=$2, availability=$3, price=$4 WHERE tapas_code=$5`, 
+            [name, description, availability, price, tapasCode] , (err, result) => {
+            if(err) {
+                res.status(500).json({error: "An error occurred updating tapas: " + err});
+            } else {
+                
+                //Inserting into handled_bookings
+                client.query(`INSERT INTO edited_tapas (username, tapas_code) VALUES ($1, $2) RETURNING *;`, [user, tapasCode], (err, result) => {
+                    if(err) {
+                        res.status(500).json({error: "An error occurred inserting edited tapas: " + err});
+                    } else {
+                        const updatedTapas = result.rows;
+                        res.status(200).json({ updatedTapas });
+                    }
+                });
+            }
+        });
+    }
 });
 
 //Deleting tapas
@@ -234,25 +312,51 @@ router.delete("/tapasmenu/:id", authenticateToken, (req, res) => {
 router.post("/drinkmenu", authenticateToken, (req, res) => {
     const { name, description, price } = req.body;
 
-    //Inserting into tapas
-    client.query(`INSERT INTO drinks (name, description, price) VALUES ($1,$2,$3) RETURNING drink_code;`, [name, description, price], (err, results) => {
-        if(err) {
-             res.status(500).json({ error: "An error occurred: " + err });
-        } else {
-
-            const drinkCode = results.rows[0].drink_code;
-            const user = req.username.username;
-
-            //Inserting into edited_drinks
-            client.query(`INSERT INTO edited_drinks (username, drink_code) VALUES ($1, $2)`, [user, drinkCode], (err, results) => {
-                if(err) {
-                    return res.status(500).json({ error: "An error occurred: " + err });
-                }
-
-                res.status(200).json({ message: "Drinken har lagts till. "});
-            })
+    const errorList = {
+        message: [],
+        detail: "",
+        https_resonse: {
         }
-    })
+    };
+    
+    if(!name) {
+        return errorList.message.push("Insert name of drink");
+    }
+
+    if(!description) {
+        return errorList.message.push("Insert description of drink");
+    }
+
+    if(!price) {
+        return errorList.message.push("Insert price");
+    }
+
+    if(errorList.length > 0) {
+        errorList.detail = "Name, description and price must be included.";
+        errorList.https_resonse.message = "Bad request";
+        res.status(400).json({ errorList });
+
+    } else {
+        //Inserting into tapas
+        client.query(`INSERT INTO drinks (name, description, price) VALUES ($1,$2,$3) RETURNING drink_code;`, [name, description, price], (err, results) => {
+            if(err) {
+                res.status(500).json({ error: "An error occurred: " + err });
+            } else {
+
+                const drinkCode = results.rows[0].drink_code;
+                const user = req.username.username;
+
+                //Inserting into edited_drinks
+                client.query(`INSERT INTO edited_drinks (username, drink_code) VALUES ($1, $2)`, [user, drinkCode], (err, results) => {
+                    if(err) {
+                        return res.status(500).json({ error: "An error occurred: " + err });
+                    }
+
+                    res.status(200).json({ message: "Drinken har lagts till. "});
+                })
+            }
+        });
+    }
 });
 
 
@@ -262,25 +366,51 @@ router.put("/drinkmenu/:id", authenticateToken, (req, res) => {
     let user = req.username.username;
     let { name, description, availability, price } = req.body;
 
-    //Updating booking
-    client.query(`UPDATE drinks
-        SET name=$1, description=$2, availability=$3, price=$4 WHERE drink_code=$5`, 
-        [name, description, availability, price, drinkCode] , (err, result) => {
-        if(err) {
-            res.status(500).json({error: "An error occurred updating drink: " + err});
-        } else {
-            
-            //Inserting into handled_bookings
-            client.query(`INSERT INTO edited_drinks (username, drink_code) VALUES ($1, $2) RETURNING *;`, [user, drinkCode], (err, result) => {
-                if(err) {
-                    res.status(500).json({error: "An error occurred inserting edited drink: " + err});
-                } else {
-                    const updatedDrink = result.rows;
-                    res.status(200).json({ updatedDrink });
-                }
-            });
+    const errorList = {
+        message: [],
+        detail: "",
+        https_resonse: {
         }
-    });
+    };
+    
+    if(!name) {
+        return errorList.message.push("Insert name of drink");
+    }
+
+    if(!description) {
+        return errorList.message.push("Insert description of drink");
+    }
+
+    if(!price) {
+        return errorList.message.push("Insert price");
+    }
+
+    if(errorList.length > 0) {
+        errorList.detail = "Name, description and price must be included.";
+        errorList.https_resonse.message = "Bad request";
+        res.status(400).json({ errorList });
+
+    } else {
+        //Updating booking
+        client.query(`UPDATE drinks
+            SET name=$1, description=$2, availability=$3, price=$4 WHERE drink_code=$5`, 
+            [name, description, availability, price, drinkCode] , (err, result) => {
+            if(err) {
+                res.status(500).json({error: "An error occurred updating drink: " + err});
+            } else {
+                
+                //Inserting into handled_bookings
+                client.query(`INSERT INTO edited_drinks (username, drink_code) VALUES ($1, $2) RETURNING *;`, [user, drinkCode], (err, result) => {
+                    if(err) {
+                        res.status(500).json({error: "An error occurred inserting edited drink: " + err});
+                    } else {
+                        const updatedDrink = result.rows;
+                        res.status(200).json({ updatedDrink });
+                    }
+                });
+            }
+        });
+    }
 });
 
 //Deleting drinks
