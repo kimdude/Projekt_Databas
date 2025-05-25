@@ -56,7 +56,7 @@ client.query(`
     DROP TABLE IF EXISTS edited_drinks;
     CREATE TABLE edited_drinks (
         update_id   SERIAL PRIMARY KEY,
-        username    VARCHAR(10),
+        username    VARCHAR(20),
         drink_code  INT,
         FOREIGN KEY(username) REFERENCES users(username),
         FOREIGN KEY(drink_code) REFERENCES drinks(drink_code)
@@ -67,7 +67,7 @@ client.query(`
     DROP TABLE IF EXISTS edited_tapas;
     CREATE TABLE edited_tapas (
         update_id   SERIAL PRIMARY KEY,
-        username    VARCHAR(10),
+        username    VARCHAR(20),
         tapas_code  INT,
         FOREIGN KEY(username) REFERENCES users(username),
         FOREIGN KEY(tapas_code) REFERENCES tapas(tapas_code)
@@ -103,7 +103,7 @@ client.query(`
     DROP TABLE IF EXISTS handled_bookings;
     CREATE TABLE handled_bookings (
         update_id   SERIAL PRIMARY KEY,
-        username    VARCHAR(10),
+        username    VARCHAR(20),
         booking_num INT,
         FOREIGN KEY(username) REFERENCES users(username),
         FOREIGN KEY(booking_num) REFERENCES bookings(booking_num)

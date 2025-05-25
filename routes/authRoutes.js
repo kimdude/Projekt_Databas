@@ -152,6 +152,8 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
 
     } 
 
+    console.log(user)
+    console.log(bookingNr)
     //Updating booking
     client.query(`UPDATE bookings
         SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
@@ -167,6 +169,7 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
             } 
 
             const updatedBooking = result.rows;
+            console.log(updatedBooking)
             res.status(200).json({ updatedBooking });
         });
     });
