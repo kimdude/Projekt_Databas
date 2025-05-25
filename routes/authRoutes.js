@@ -129,48 +129,47 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
     const errorList = {
         message: [],
         detail: "",
-        https_resonse: {
+        https_response: {
         }
     };
     
     if(!booked_date) {
-        return errorList.message.push("Insert date for booking");
+        errorList.message.push("Insert date for booking");
     }
 
     if(!booked_time) {
-        return errorList.message.push("Insert time for booking");
+        errorList.message.push("Insert time for booking");
     }
 
     if(!people) {
-        return errorList.message.push("Insert size of group");
+        errorList.message.push("Insert size of group");
     }
 
-    if(errorList.length > 0) {
+    if(errorList.message.length > 0) {
         errorList.detail = "booked date, booked time and people must be included.";
-        errorList.https_resonse.message = "Bad request";
-        res.status(400).json({ errorList });
+        errorList.https_response.message = "Bad request";
+        return res.status(400).json({ errorList });
 
-    } else {
-        //Updating booking
-        client.query(`UPDATE bookings
-            SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
-            WHERE booking_num=$6`, [message, booked_date, booked_time, people, confirmed, bookingNr] , (err, result) => {
+    } 
+
+    //Updating booking
+    client.query(`UPDATE bookings
+        SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
+        WHERE booking_num=$6`, [message, booked_date, booked_time, people, confirmed, bookingNr] , (err, result) => {
+        if(err) {
+                return res.status(500).json({error: "An error occurred updating booking: " + err});
+        }
+            
+        //Inserting into handled_bookings
+        client.query(`INSERT INTO handled_bookings (username, booking_num) VALUES ($1, $2) RETURNING *;`, [user, bookingNr], (err, result) => {
             if(err) {
-                res.status(500).json({error: "An error occurred updating booking: " + err});
-            } else {
-                
-                //Inserting into handled_bookings
-                client.query(`INSERT INTO handled_bookings (username, booking_num) VALUES ($1, $2) RETURNING *;`, [user, bookingNr], (err, result) => {
-                    if(err) {
-                        res.status(500).json({error: "An error occurred inserting handled booking: " + err});
-                    } else {
-                        const updatedBooking = result.rows;
-                        res.status(200).json({ updatedBooking });
-                    }
-                });
-            }
+                return res.status(500).json({error: "An error occurred inserting handled booking: " + err});
+            } 
+            
+            const updatedBooking = result.rows;
+            res.status(200).json({ updatedBooking });
         });
-    }
+    });
 });
 
 
