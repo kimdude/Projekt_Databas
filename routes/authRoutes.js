@@ -152,8 +152,6 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
 
     } 
 
-    console.log(user)
-    console.log(bookingNr)
     //Updating booking
     client.query(`UPDATE bookings
         SET message=$1, booked_date=$2, booked_time=$3, people=$4, confirmed=$5
@@ -180,12 +178,18 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
 router.delete("/bookings/:id", authenticateToken, (req, res) => {
     let bookingNr = req.params.id;
 
-    client.query(`DELETE FROM bookings WHERE booking_num=$1;`, [bookingNr], (err, results) => {
+    client.query(`DELETE FROM handled_bookings WHERE booking_num=$1;`, [bookingNr], (err, results) => {
         if(err) {
             return res.status(400).json({ error: "An error occurred: " + err });
         }
 
-        res.json({ message: "Booking deleted: " + bookingNr });
+        client.query(`DELETE FROM bookings WHERE booking_num=$1;`, [bookingNr], (err, results) => {
+            if(err) {
+                return res.status(400).json({ error: "An error occurred: " + err });
+            }
+
+            res.json({ message: "Booking deleted: " + bookingNr });
+        });
     });
 });
 
