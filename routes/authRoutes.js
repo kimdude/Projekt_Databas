@@ -302,12 +302,18 @@ router.put("/tapasmenu/:id", authenticateToken, (req, res) => {
 router.delete("/tapasmenu/:id", authenticateToken, (req, res) => {
     let tapasCode = req.params.id;
 
-    client.query(`DELETE FROM tapas WHERE tapas_code=$1;`, [tapasCode], (err, results) => {
+    client.query(`DELETE FROM edited_tapas WHERE tapas_code=$1;`, [tapasCode], (err, results) => {
         if(err) {
             return res.status(400).json({ error: "An error occurred: " + err });
         }
         
-        res.json({ message: "Tapas deleted: " + tapasCode });
+        client.query(`DELETE FROM tapas WHERE tapas_code=$1;`, [tapasCode], (err, results) => {
+            if(err) {
+                return res.status(400).json({ error: "An error occurred: " + err });
+            }
+        
+            res.json({ message: "Tapas deleted: " + tapasCode });
+        });
     });
 });
 
@@ -420,12 +426,18 @@ router.put("/drinkmenu/:id", authenticateToken, (req, res) => {
 router.delete("/drinkmenu/:id", authenticateToken, (req, res) => {
     let drinkCode = req.params.id;
 
-    client.query(`DELETE FROM drinks WHERE drink_code=$1;`, [drinkCode], (err, results) => {
+    client.query(`DELETE FROM edited_drinks WHERE drink_code=$1;`, [drinkCode], (err, results) => {
         if(err) {
             return res.status(400).json({ error: "An error occurred: " + err });
         } 
         
-        res.json({ message: "Drink deleted: " + drinkCode });
+        client.query(`DELETE FROM drinks WHERE drink_code=$1;`, [drinkCode], (err, results) => {
+            if(err) {
+                return res.status(400).json({ error: "An error occurred: " + err });
+            } 
+            
+            res.json({ message: "Drink deleted: " + drinkCode });
+        });
     });
 });
 
