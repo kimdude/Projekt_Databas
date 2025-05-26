@@ -300,7 +300,7 @@ router.put("/tapasmenu/:id", authenticateToken, (req, res) => {
 
 //Deleting tapas
 router.delete("/tapasmenu/:id", authenticateToken, (req, res) => {
-    let tapasCode = req.params.id;
+    let tapasCode = parseInt(req.params.id);
 
     client.query(`DELETE FROM edited_tapas WHERE tapas_code=$1;`, [tapasCode], (err, results) => {
         if(err) {
