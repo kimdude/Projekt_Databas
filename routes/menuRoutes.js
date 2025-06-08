@@ -3,7 +3,8 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const client = require("../db/db");
 
-//Tapas routing
+/* Tapas routing */
+//Getting all tapas
 router.get("/tapasmenu", (req, res) => {
     client.query(`SELECT * FROM tapas`, (err, result) => {
         if(err) {
@@ -21,7 +22,8 @@ router.get("/tapasmenu", (req, res) => {
 });
 
 
-//Drinks routing
+/* Drinks routing */
+//Getting all drinks
 router.get("/drinkmenu", (req, res) => {
     client.query(`SELECT * FROM drinks`, (err, result) => {
         if(err) {
@@ -40,6 +42,7 @@ router.get("/drinkmenu", (req, res) => {
 
 
 //Booking routing
+//Adding new customer or fetching existing before adding booking
 router.post("/bookings", (req, res) => {
     const { firstname, surname, email, bookedDate, bookedTime, peopleSum, message } = req.body;
     const errorList = {
@@ -111,6 +114,7 @@ router.post("/bookings", (req, res) => {
     }
 });
 
+//Adding new booking
 function addBooking(req, res, customerID) {
     const { bookedDate, bookedTime, peopleSum, message } = req.body;
 
@@ -127,6 +131,7 @@ function addBooking(req, res, customerID) {
 }
 
 //Reviews routing
+//Getting all reviews
 router.get("/reviews", (req, res) => {
     client.query(`SELECT * FROM reviews`, (err, result) => {
         if(err) {
@@ -143,6 +148,7 @@ router.get("/reviews", (req, res) => {
     });
 });
 
+//Adding new review
 router.post("/reviews", (req, res) => {
     const { firstname, surname, email, message } = req.body;
     const errorList = {

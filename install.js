@@ -120,6 +120,7 @@ client.query(`
     )
 `);
 
+//Creating view with bookings and customers
 client.query(`
     CREATE VIEW bookingSummary AS 
     SELECT bookings.booking_num, bookings.message, bookings.booked_date, bookings.booked_time, bookings.people, bookings.created, bookings.confirmed, customers.customer_id, customers.firstname, customers.surname, customers.email

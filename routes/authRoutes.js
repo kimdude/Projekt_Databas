@@ -107,7 +107,7 @@ router.post("/register", async (req, res) => {
 router.get("/bookings", authenticateToken, (req, res) => {
     client.query(`SELECT * FROM bookingSummary`, (err, result) => {
         if(err) {
-            return res.status(500).json({error: "An error occurred: " + err});         //Check status code!!
+            return res.status(500).json({error: "An error occurred: " + err});         
         }
 
         let rows = result.rows;
@@ -167,7 +167,6 @@ router.put("/bookings/:id", authenticateToken, (req, res) => {
             } 
 
             const updatedBooking = result.rows;
-            console.log(updatedBooking)
             res.status(200).json({ updatedBooking });
         });
     });
